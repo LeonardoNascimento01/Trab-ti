@@ -1,0 +1,144 @@
+package Control;
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+
+import javax.swing.JOptionPane;
+
+public class ConectaBancoDados {
+	   private String drv;
+	    private String url;
+	    private String nomeUsuario;
+	    private String senhaUsuario;
+	    private Connection conexao;
+	    private Statement st;
+	    private int retorno;
+	    
+	    public boolean conectar(){
+	    	boolean result = true;
+	    	try {
+	    		//Class.forName(drv);
+	    		Class.forName("com.mysql.cj.jdbc.Driver");
+	    		conexao = DriverManager.getConnection("jdbc:mysql://localhost/lemabiblioteca","root", "adm2022ps1m");
+	    	} catch (ClassNotFoundException erroClass){
+	    		mensagemErro(erroClass.getMessage());
+	    		result = false;
+	    	} catch (SQLException erroSQL){
+	    		mensagemErro(erroSQL.getMessage());
+	    		result = false;
+	    	}
+	    	return result;
+	    }
+	    
+	    public void desconectar(){
+	    	try {
+	    		conexao.close();
+	    	} catch (SQLException erroSQL){
+	    		mensagemErro(erroSQL.getMessage());
+	    	}
+	    }
+	    
+	    public int regCount(String qry){
+	    	int result = 0;
+	    	try {
+	    		st = conexao.createStatement();
+	    		ResultSet rs = st.executeQuery(qry);
+	    		rs.next();
+	    		result = rs.getInt(1);
+	    		st.close();
+	    	} catch (SQLException sqlex){
+	    		mensagemErro(sqlex.getMessage());
+	    	}
+	    	return result;
+	    }
+	    
+	    public int exeQuery(String qry){
+	    	int result = 0;
+	    	try {
+	    		st = conexao.createStatement();
+	    		result = st.executeUpdate(qry);
+	    		st.close();
+	    	} catch(SQLException sqlex){
+	    		mensagemErro(sqlex.getMessage());
+	    	}
+	    	return result;
+	    }
+	    
+	    public String getColumn(String qry){
+	    	String result = "";
+	    	try {
+	    		st = conexao.createStatement();
+	    		ResultSet rs = st.executeQuery(qry);
+	    		rs.next();
+	    		result = "" + rs.getString(1);
+	    		st.close();
+	    	} catch(SQLException sqlex){
+	    		mensagemErro(sqlex.getMessage());
+	    	}
+	    	return result;
+	    }
+	    
+	    public void getColumn(String qry, String[] reg){
+	    	try {
+	    		Statement st = conexao.createStatement();
+	    		ResultSet rs = st.executeQuery(qry);
+	    		rs.next();
+	    		for (int i = 1; i <= reg.length; i++)
+	    			reg[i-1] = "" + rs.getString(i);
+	    		    st.close();
+	    	} catch (SQLException sqlex){
+	    		mensagemErro (sqlex.getMessage());
+	    	}
+	    }
+	    
+	    public void getColumn(String qry, String[][] reg, int regs){
+	    	try{
+	    		int lin = 0;
+	    		st = conexao.createStatement();
+	    		ResultSet rs = st.executeQuery(qry);
+	    		while (rs.next()){
+	    			for (int i=0; i<regs; i++){
+	    				reg[lin][i] = "" + rs.getString(i+1);
+	    			}
+	    			lin++;
+	    		} 
+	    	}catch (SQLException sqlex){
+	    			mensagemErro(sqlex.getMessage());
+	         }
+	    }
+	    
+	    public void setDRV(String valor){
+	    	drv = valor;
+	    }
+	    
+	    public void setURL(String valor){
+	    	url = valor;
+	    }
+	    
+	    public void setNomeUsuario(String valor){
+	    	nomeUsuario = valor;
+	    }
+	    
+	    public void setSenhaUsuario(String valor){
+	    	senhaUsuario = valor;
+	    }
+	    
+	    private void mensagemErro(String msg){
+	    	JOptionPane.showMessageDialog(null, msg, "Erro", JOptionPane.ERROR_MESSAGE);
+	    }
+		
+		public ResultSet ListarDados(String sql) {
+			ResultSet rs = null;
+			try {
+				rs = st.executeQuery(sql);
+				retorno = 1;
+			}catch(SQLException ex){
+				retorno = 0;
+			}
+			return rs;
+		}
+
+}

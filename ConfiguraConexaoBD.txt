@@ -1,0 +1,46 @@
+package Control;
+
+import java.io.FileInputStream;
+import java.util.Properties;
+
+public class ConfiguraConexaoBD {
+	private String drv;
+	private String url;
+	private String nomeUsuario;
+	private String senhaUsuario;
+	
+	public ConfiguraConexaoBD(){
+		Properties propriedades = new Properties();
+		
+		try {
+			FileInputStream arqInicial = new FileInputStream("projetoAlfa.ini");
+			propriedades.load(arqInicial);
+			drv = propriedades.getProperty("drv");
+			url = propriedades.getProperty("url");
+			nomeUsuario = propriedades.getProperty("nomeUsuario");
+			senhaUsuario = propriedades.getProperty("senhaUsuario");
+		} catch (Exception e){
+			drv = "com.mysql.cj.jdbc.Driver";
+			url  = "jdbc:mysql://localhost/lemabiblioteca";
+			nomeUsuario  = "root";
+			senhaUsuario = "adm2022ps1m";
+		}
+	}
+	
+	public String getDRV(){
+		return drv;
+	}
+	
+	public String getURL(){
+		return url;
+	}
+	
+	public String getNomeUsuario(){
+		return nomeUsuario;
+	}
+	
+	public String getSenhaUsuario(){
+		return senhaUsuario;
+	}
+
+}
